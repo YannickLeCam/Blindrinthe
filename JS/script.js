@@ -6,27 +6,29 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const tileSize = 70;
 const timerDisplay = document.getElementById('timerDisplay');
+const deplacementCountDisplay = document.getElementById('deplacementCount');
 
 
 
-const maze = [
+const mazeOriginal = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
     [0, 1, 0, 0, 1, 0, 0, 0, 1, 0],
     [0, 1, 0, 2, 1, 0, 2, 0, 1, 0],
-    [0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
-    [0, 1, 0, 1, 0, 2, 1, 0, 1, 0],
+    [0, 1, 0, 7, 1, 1, 7, 0, 1, 0],
+    [0, 1, 0, 7, 0, 0, 7, 0, 1, 0],
+    [0, 1, 0, 7, 0, 2, 7, 0, 1, 0],
     [0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
     [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
     [0, 1, 1, 1, 1, 1, 1, 1, 4, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ];
-
+let maze = JSON.parse(JSON.stringify(mazeOriginal));
 let playerPos = { x: 1, y: 1 };
 const collectables = [{ x: 6, y: 6 }, { x: 3, y: 8 }];
 let collected = 0;
 let blinded = false;
+let deplacementCount = 0;
 
 
 let timer;
@@ -63,7 +65,9 @@ function drawMaze() {
                                 tile === 1 ? 'black' :
                                 tile === 2 ? 'black' :
                                 tile === 4 ? 'black' :
-                                tile === 5 ? 'black' : 'grey';
+                                tile === 5 ? 'black' :
+                                tile === 6 ? 'grey'  :
+                                tile === 7 ? 'black' : 'brown';
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
@@ -75,7 +79,9 @@ function drawMaze() {
                                 tile === 1 ? 'white' :
                                 tile === 2 ? 'red' :
                                 tile === 4 ? 'green' :
-                                tile === 5 ? 'blue' : 'grey';
+                                tile === 5 ? 'blue' :
+                                tile === 6 ? 'grey'  :
+                                tile === 7 ? 'purple' : 'brown';
                 ctx.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
             }
         }
@@ -88,12 +94,18 @@ function updateCheckPointValue(collected,arrayCollactables){
     checkpointPrinter.innerHTML = `CheckPoint : ${collected} / ${arrayCollactables.length}`;
 }
 
+function updateDeplacementCount(){
+    deplacementCountDisplay.innerHTML = `CheckPoint : ${deplacementCount}`;
+}
+
 function movePlayer(dx, dy) {
     if (blinded == false) {
         blinded = true;
         drawMaze();
         startTimer();
     }
+    deplacementCount++;
+    updateDeplacementCount();
     let newX = playerPos.x + dx;
     let newY = playerPos.y + dy;
 
@@ -101,6 +113,9 @@ function movePlayer(dx, dy) {
         if (maze[newY][newX] !== 0) {
             playerPos.x = newX;
             playerPos.y = newY;
+            if (maze[newY][newX] === 7) {
+                maze[newY][newX] = 0;
+            }
             if (maze[newY][newX] === 5) {
                 collected+=1;
                 maze[newY][newX] = 6;
@@ -133,6 +148,8 @@ function resetGame() {
     playerPos = { x: 1, y: 1 };
     blinded = false;
     collected=0;
+    deplacementCount=0;
+    maze = JSON.parse(JSON.stringify(mazeOriginal));
     addCollactables(collectables);
     updateCheckPointValue(collected,collectables);
     drawMaze();
@@ -151,6 +168,11 @@ window.addEventListener('keydown', function(e) {
             break;
         case 'ArrowRight':
             movePlayer(1, 0);
+            break;
+        case 'Enter':
+            resetGame();
+            stopTimer();
+            timeElapsed = 0;
             break;
     }
 });
