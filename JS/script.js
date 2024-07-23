@@ -1,6 +1,3 @@
-// script.js
-
-
 const checkpointPrinter = document.getElementById('checkPoint')
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -9,7 +6,7 @@ const timerDisplay = document.getElementById('timerDisplay');
 const deplacementCountDisplay = document.getElementById('deplacementCount');
 
 
-
+// Initial maze definition
 const mazeOriginal = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
@@ -31,16 +28,22 @@ let blinded = false;
 let deplacementCount = 0;
 
 
-let timer;
+let timer; // Timer interval reference
 let timeElapsed = 0;
 
+/**
+ * Add collectables to the maze.
+ * @param {Array} arrayPosCollectables - Array of collectables positions.
+ */
 function addCollactables(arrayPosCollectables) {
     arrayPosCollectables.forEach(collectablesPos => {
         maze[collectablesPos.x][collectablesPos.y]=5;
     });
 }
 
-
+/**
+ * Start the game timer.
+ */
 function startTimer() {
     timeElapsed = 0;
     timerDisplay.textContent = `Time: ${(timeElapsed / 1000).toFixed(3)}s`;
@@ -50,11 +53,16 @@ function startTimer() {
     }, 10); // Set interval to 10 milliseconds
 }
 
-
+/**
+ * Stop the game timer.
+ */
 function stopTimer() {
     clearInterval(timer);
 }
 
+/**
+ * Draw the maze and player on the canvas.
+ */
 function drawMaze() {
     ctx.clearRect(0, 0, canvas.width, canvas.height+1);
     if (blinded) {
@@ -90,14 +98,28 @@ function drawMaze() {
     ctx.fillRect(playerPos.x * tileSize, playerPos.y * tileSize, tileSize, tileSize);
 }
 
+/**
+ * Update the checkpoint display.
+ * @param {number} collected - Number of collectables collected.
+ * @param {Array} arrayCollactables - Array of collectables.
+ */
+
 function updateCheckPointValue(collected,arrayCollactables){
     checkpointPrinter.innerHTML = `CheckPoint : ${collected} / ${arrayCollactables.length}`;
 }
 
+/**
+ * Update the movement count display.
+ */
 function updateDeplacementCount(){
     deplacementCountDisplay.innerHTML = `CheckPoint : ${deplacementCount}`;
 }
 
+/**
+ * Move the player in the specified direction.
+ * @param {number} dx - Change in x direction.
+ * @param {number} dy - Change in y direction.
+ */
 function movePlayer(dx, dy) {
     if (blinded == false) {
         blinded = true;
@@ -144,6 +166,9 @@ function movePlayer(dx, dy) {
     drawMaze();
 }
 
+/**
+ * Reset the game to its initial state.
+ */
 function resetGame() {
     playerPos = { x: 1, y: 1 };
     blinded = false;
@@ -154,6 +179,8 @@ function resetGame() {
     updateCheckPointValue(collected,collectables);
     drawMaze();
 }
+
+// Listen for keydown events to move the player or reset the game
 
 window.addEventListener('keydown', function(e) {
     switch (e.key) {
