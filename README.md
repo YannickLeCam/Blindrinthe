@@ -8,3 +8,7 @@ Faire le la création de map tel un paint on choisit ce que block et qu'on souha
 Faire une validation de la map pour que la map soit terminable
 
 Faire un tuto qui introduit le concept et les blocks 
+
+PLus tard : 
+
+VOir pour ajouter les sockets pour faire des VS avec d'autres joueurs 
